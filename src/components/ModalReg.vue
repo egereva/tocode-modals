@@ -1,18 +1,16 @@
 <template>
-    <modal
-            title="Modal with form + Validate"
-            @close="closeModal">
+    <modal title="Registration" @close="closeModal">
         <div slot="body">
             <form @submit.prevent="onSubmit">
-                <!-- name -->
-                <div class="form-item" :class="{errorInput: $v.name.$error}">
-                    <label>Name:</label>
-                    <p class="errorText" v-if="!$v.name.required">Field is required</p>
-                    <p class="errorText" v-if="!$v.name.minLength">Name must have at least {{ $v.name.$params.minLength.min }}!</p>
+                <!-- email -->
+                <div class="form-item" :class="{errorInput: $v.email.$error}">
+                    <label>Email:</label>
+                    <p class="errorText" v-if="!$v.email.required">Field is required</p>
+                    <p class="errorText" v-if="!$v.email.email">Email is not correct!</p>
                     <input
-                      v-model="name"
-                      :class="{error: $v.name.$error}"
-                      @blur="$v.name.$touch()">
+                            v-model="email"
+                            :class="{error: $v.email.$error}"
+                            @blur="$v.email.$touch()">
                 </div>
                 <!-- password -->
                 <div class="form-item" :class="{errorInput: $v.password.$error}">
@@ -33,45 +31,36 @@
                             :class="{error: $v.repeatPassword.$error}"
                             @blur="$v.repeatPassword.$touch()">
                 </div>
-                <!-- email -->
-                <div class="form-item" :class="{errorInput: $v.email.$error}">
-                    <label>Email:</label>
-                    <p class="errorText" v-if="!$v.email.required">Field is required</p>
-                    <p class="errorText" v-if="!$v.email.email">Email is not correct!</p>
-                    <input
-                            v-model="email"
-                            :class="{error: $v.email.$error}"
-                            @blur="$v.email.$touch()">
-                </div>
+
                 <!-- button -->
-                <button class="btn btnPrimary">Submit!</button>
+                <button class="btn btnPrimary">Registration</button>
+
+                <!-- no registration -->
+                <div class="align-center">
+                    <span class="form-link" @click="goToLogin">I have an account</span>
+                </div>
             </form>
         </div>
-    </modal>
 
+    </modal>
 </template>
 
 <script>
-    import { required, minLength, email, sameAs } from 'vuelidate/lib/validators'
+    import {required, minLength, email, sameAs} from 'vuelidate/lib/validators'
     import modal from '@/components/UI/Modal.vue'
 
     export default {
         components: {
-            modal,
+            modal
         },
         data() {
             return {
                 email: '',
-                name: '',
                 password: '',
                 repeatPassword: ''
             }
         },
         validations: {
-            name: {
-                required,
-                minLength: minLength(4)
-            },
             email: {
                 required,
                 email
@@ -89,7 +78,6 @@
                 this.$v.$touch()
                 if(!this.$v.$invalid){
                     const user = {
-                        name: this.name,
                         email: this.email,
                         password: this.password
                     }
@@ -106,34 +94,36 @@
                 //reset
                 this.resetData()
             },
+            goToLogin () {
+                this.$emit('goToLogin')
+
+                //reset
+                this.resetData()
+            },
             resetData () {
-                this.name = ''
                 this.email = ''
                 this.password = ''
                 this.repeatPassword = ''
                 this.$v.$reset()
             }
         }
-
     }
 </script>
 
-<style lang="scss">
-    .form-item .errorText{
-         display: none;
-         margin-bottom: 8px;
-         font-size: 13.4px;
-         color: #de4040;
-     }
-
-    .form-item {
-        &.errorInput .errorText{
-            display: block;
-        }
+<style lang="scss" scoped>
+    label {
+        text-align: left;
     }
 
-    input.error {
-        border-color: #de4040;
+    .form-link {
+        display: inline-block;
+        margin: 20px 0;
+        text-decoration: underline;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: none;
+        }
     }
 
 </style>
